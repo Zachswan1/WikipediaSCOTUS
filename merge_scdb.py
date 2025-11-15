@@ -4,7 +4,7 @@
 merge_scdb.py
 -----------------
 
-Merges the SCDB Legacy (~1791–1945) and Modern (~1946–present) case-centered citation datasets.
+Merges the SCDB Legacy (1791–1945) and Modern (1946–present) case-centered citation datasets.
 
 INSTRUCTIONS:
 
