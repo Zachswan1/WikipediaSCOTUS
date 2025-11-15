@@ -1,113 +1,154 @@
-# 📘 WikipediaSCOTUS
+# WikipediaSCOTUS
 
-A Python-based data collection tool for building a **Wikipedia-based salience measure** for U.S. Supreme Court cases.
+This repository provides a complete workflow for generating a unified dataset of U.S. Supreme Court cases with:
 
-This project:
+- Wikipedia metadata  
+- U.S. Reports citations  
+- Docket numbers  
+- Monthly Wikipedia pageviews (2008–present)  
+- Supreme Court Database (SCDB) variables  
 
-- Identifies **all Wikipedia articles** containing SCOTUS-related infobox templates  
-- Extracts each page’s **U.S. Reports citation** (if present)  
-- Extracts each page’s **docket number**  
-- Downloads **monthly pageview metrics** (July 2015–present)  
-- Produces a unified dataset of Wikipedia-based salience values  
-- Integrates this dataset with **Supreme Court Database (SCDB)** case information
+The workflow uses three scripts:
 
----
+- caseCollector.py — Scrapes Wikipedia SCOTUS infobox pages + pageviews  
+- merge_scdb.py — Merges SCDB Legacy + Modern into one unified file  
+- extract.py — Merges SCDB with Wikipedia data  
 
-## 📂 Repository Structure
-
-WikipediaSCOTUS/  
-│  
-├── caseCollector.py      ← Scrapes Wikipedia infoboxes + pageviews  
-├── extract.py            ← Merges Wikipedia data with SCDB case data  
-└── README.md  
+Because SCDB cannot be redistributed here, you must download the official CSVs directly from SCDB.
 
 ---
 
-## 🛠️ Requirements
+## Required External Data: Supreme Court Database (SCDB)
 
-Install dependencies:
+Download two datasets from:
 
-pip install -r requirements.txt
+http://scdb.wustl.edu/data.php?s=1
 
-Suggested requirements.txt:
+You need the “Case Centered — Cases Organized by Supreme Court Citation” version for both Modern and Legacy.
 
-requests  
-requests-oauthlib  
-tqdm  
-python-dotenv  
+### 1. Modern Database (typically 1946 → present)
+
+From the MODERN Database section, download the latest release.
+
+Example filename (yours may differ):
+
+SCDB_2025_01_caseCentered_Citation.csv.zip
+
+Unzip it so you have the CSV:
+
+SCDB_2025_01_caseCentered_Citation.csv
+
+### 2. Legacy Database (typically 1791 → 1945)
+
+From the LEGACY Database section, download:
+
+SCDB_Legacy_07_caseCentered_Citation.csv.zip
+
+Unzip it so you have:
+
+SCDB_Legacy_07_caseCentered_Citation.csv
+
+Place both CSVs in the same folder as the scripts.
 
 ---
 
-## 🔐 Authentication (Required)
+## Step 1 — Merge SCDB Modern + Legacy
 
-This script uses the Wikimedia API via **OAuth 1.0a**.
+Run:
 
-Create your OAuth consumer here:
+python3 merge_scdb.py
 
-https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration/propose
+You will be prompted for:
 
-Then create a `.env` file containing:
+- Legacy SCDB filename (e.g. SCDB_Legacy_07_caseCentered_Citation.csv)  
+- Modern SCDB filename (e.g. SCDB_2025_01_caseCentered_Citation.csv)
 
-WIKI_OAUTH_CONSUMER_KEY=your_key  
-WIKI_OAUTH_CONSUMER_SECRET=your_secret  
-WIKI_OAUTH_ACCESS_TOKEN=your_token  
-WIKI_OAUTH_ACCESS_SECRET=your_token_secret  
+Output created:
 
-⚠️ Never commit your `.env` file.
+SCDB_merged.csv
+
+This file contains all rows from both Legacy and Modern SCDB case-centered citation datasets.
 
 ---
 
-## ▶️ Usage
+## Step 2 — Prepare Repository Structure
 
-### Step 1 — Collect Wikipedia case data
+Your folder should now contain:
+
+caseCollector.py  
+extract.py  
+merge_scdb.py  
+SCDB_Legacy_07_caseCentered_Citation.csv (or your legacy filename)  
+SCDB_2025_01_caseCentered_Citation.csv (or your modern filename)  
+SCDB_merged.csv  
+.env
+
+---
+
+## Step 3 — Provide Wikimedia OAuth Credentials
+
+Create a .env file containing:
+
+WIKI_OAUTH_CONSUMER_KEY="YOUR_KEY"  
+WIKI_OAUTH_CONSUMER_SECRET="YOUR_SECRET"  
+WIKI_OAUTH_ACCESS_TOKEN="YOUR_TOKEN"  
+WIKI_OAUTH_ACCESS_SECRET="YOUR_ACCESS_SECRET"
+
+These must come from your own Wikimedia OAuth consumer/app.
+
+---
+
+## Step 4 — Run caseCollector.py
+
+This script:
+
+- Finds all Wikipedia pages using SCOTUS infobox templates  
+- Extracts U.S. Reports citations  
+- Extracts docket numbers  
+- Downloads monthly pageview metrics from July 2015 to present via the official REST API (pre-2015 data may be incomplete/legacy)
+- Produces:
+
+wiki_infobox_cases.csv
 
 Run:
 
 python3 caseCollector.py
 
-This produces:
+---
 
-**wiki_infobox_cases.csv**
+## Step 5 — Run extract.py
 
-containing:
-- page title  
-- U.S. Reports citation  
-- docket number  
-- pageview metrics  
+This script merges:
 
-### Step 2 — Merge with SCDB data
+- wiki_infobox_cases.csv  
+- SCDB_merged.csv  
 
-Place your SCDB file (e.g., `SCDB_2024_01_caseCentered_Citation.csv`) in the same directory.
+It outputs:
 
-Then run:
+SCDB_with_infobox_views.csv  
+unmatched_wiki_cases.csv
+
+Run:
 
 python3 extract.py
 
-This produces:
+---
 
-**scdb_with_wikipedia_salience.csv**
+## Output Summary
 
-which merges SCDB case metadata with Wikipedia pageview-based salience.
+SCDB_merged.csv — Combined SCDB Legacy + Modern (citation-organized, case-centered)  
+wiki_infobox_cases.csv — All Wikipedia SCOTUS infobox pages with citations, dockets, and pageviews  
+SCDB_with_infobox_views.csv — Final merged dataset (SCDB + Wikipedia metadata + pageviews)  
+unmatched_wiki_cases.csv — Wikipedia cases that could not be matched to SCDB
 
 ---
 
-## 📊 Output Columns (wiki_infobox_cases.csv)
+## Final Result
 
-title — Wikipedia page title  
-usCite — U.S. Reports citation (if present)  
-docket — Docket number  
-views_all_time — Total views since July 2015  
-views_1yr — Views in the last 12 months  
-views_6mo — Views in the last 6 months  
-views_1mo — Views in the last month  
+You get a unified dataset containing:
 
----
+- SCDB variables from 1791 → present  
+- Wikipedia attention metrics (monthly) from 2008 → present  
+- Accurate case matching via U.S. Reports citations and docket numbers  
 
-## 📝 Notes on Pageview Data
-
-The Wikimedia REST API provides reliable pageview data beginning **July 2015**.
-
-Although the script requests data starting in 2008, the API only returns valid monthly traffic from mid-2015 onward.  
-Pageviews from before July 2015 are incomplete and should not be treated as comparable measures.
-
----
+This supports constructing a Wikipedia-based salience measure for U.S. Supreme Court cases.
