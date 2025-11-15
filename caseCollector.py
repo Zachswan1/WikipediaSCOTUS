@@ -28,6 +28,8 @@ import csv
 import time
 import datetime
 import requests
+from dotenv import load_dotenv
+load_dotenv()
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from requests.adapters import HTTPAdapter, Retry
 from requests_oauthlib import OAuth1
