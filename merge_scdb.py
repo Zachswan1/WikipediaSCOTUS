@@ -29,18 +29,32 @@ The script will produce:
 
 import pandas as pd
 
+
+def read_scdb_csv(path: str) -> pd.DataFrame:
+    """Load SCDB CSVs, trying UTF-8 first then CP1252 fallback."""
+    try:
+        return pd.read_csv(path, dtype=str, encoding="utf-8")
+    except UnicodeDecodeError:
+        return pd.read_csv(path, dtype=str, encoding="cp1252")
+
+
 def main():
-    legacy_file = input("Enter the Legacy SCDB CSV filename (e.g. SCDB_Legacy_07_caseCentered_Citation.csv): ").strip()
-    modern_file = input("Enter the Modern SCDB CSV filename (e.g. SCDB_2025_01_caseCentered_Citation.csv): ").strip()
+    legacy_file = input(
+        "Enter the Legacy SCDB CSV filename (e.g. SCDB_Legacy_07_caseCentered_Citation.csv): "
+    ).strip()
+
+    modern_file = input(
+        "Enter the Modern SCDB CSV filename (e.g. SCDB_2025_01_caseCentered_Citation.csv): "
+    ).strip()
 
     if not legacy_file or not modern_file:
         raise SystemExit("Both filenames are required. Exiting.")
 
     print(f"Loading Legacy SCDB from: {legacy_file}")
-    legacy = pd.read_csv(legacy_file, dtype=str)
+    legacy = read_scdb_csv(legacy_file)
 
     print(f"Loading Modern SCDB from: {modern_file}")
-    modern = pd.read_csv(modern_file, dtype=str)
+    modern = read_scdb_csv(modern_file)
 
     print("Merging datasets...")
     merged = pd.concat([legacy, modern], ignore_index=True)
@@ -50,6 +64,7 @@ def main():
     merged.to_csv(output, index=False)
 
     print("\nDone! SCDB_merged.csv is ready.")
+
 
 if __name__ == "__main__":
     main()
