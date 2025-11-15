@@ -2,7 +2,7 @@ import pandas as pd
 import re
 
 WIKI_FILE = "wiki_infobox_cases.csv"
-SCDB_FILE = "SCDB_merged_legacy_and_2025.csv"
+SCDB_FILE = "SCDB_merged.csv"
 OUTPUT_FILE = "SCDB_with_infobox_views.csv"
 UNMATCHED_FILE = "unmatched_wiki_cases.csv"
 
