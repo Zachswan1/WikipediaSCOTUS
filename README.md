@@ -5,7 +5,7 @@ This repository generates a unified dataset of U.S. Supreme Court cases using:
 - Wikipedia infobox metadata  
 - U.S. Reports citations  
 - Docket numbers  
-- Monthly Wikipedia pageviews (2008–present)  
+- Monthly Wikipedia pageviews (2015–present)  
 - Supreme Court Database (SCDB) variables  
 
 The workflow uses three scripts:
@@ -164,7 +164,7 @@ python3 extract.py
 You obtain a unified dataset containing:
 
 - SCDB variables from 1791 → present  
-- Wikipedia attention metrics (monthly) from 2008 → present  
+- Monthly Wikipedia pageview metrics from 2015 to present via the official REST API (pre-2015 data may be incomplete/legacy).
 - Accurate matching via U.S. Reports citations + docket numbers  
 
 This supports constructing a Wikipedia-based salience measure for U.S. Supreme Court cases.
