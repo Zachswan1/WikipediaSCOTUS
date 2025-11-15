@@ -2,16 +2,14 @@
 
 A Python-based data collection tool for building a **Wikipedia-based salience measure** for U.S. Supreme Court cases.
 
-This project automatically:
+This project:
 
-- Finds **all Wikipedia articles** that use SCOTUS-related infobox templates  
+- Identifies **all Wikipedia articles** containing SCOTUS-related infobox templates  
 - Extracts each page’s **U.S. Reports citation** (if present)  
 - Extracts each page’s **docket number**  
 - Downloads **monthly pageview metrics** (July 2015–present)  
-- Produces a unified dataset:  
-  **wiki_infobox_cases.csv**
-
-This enables a transparent, replicable measure of public attention toward Supreme Court cases using Wikipedia traffic patterns.
+- Produces a unified dataset of Wikipedia-based salience values  
+- Integrates this dataset with **Supreme Court Database (SCDB)** case information
 
 ---
 
@@ -19,8 +17,8 @@ This enables a transparent, replicable measure of public attention toward Suprem
 
 WikipediaSCOTUS/  
 │  
-├── caseCollector.py      ← main script (collects all data)  
-├── extract.py            ← optional helper script  
+├── caseCollector.py      ← Scrapes Wikipedia infoboxes + pageviews  
+├── extract.py            ← Merges Wikipedia data with SCDB case data  
 └── README.md  
 
 ---
@@ -61,18 +59,35 @@ WIKI_OAUTH_ACCESS_SECRET=your_token_secret
 
 ## ▶️ Usage
 
-Run the collector:
+### Step 1 — Collect Wikipedia case data
+
+Run:
 
 python3 caseCollector.py
 
-The script will:
+This produces:
 
-1. Identify Wikipedia pages with SCOTUS infobox templates  
-2. Extract:  
-   - U.S. Reports citation  
-   - Docket number  
-3. Fetch monthly pageviews (July 2015–present)  
-4. Save the final dataset as **wiki_infobox_cases.csv**
+**wiki_infobox_cases.csv**
+
+containing:
+- page title  
+- U.S. Reports citation  
+- docket number  
+- pageview metrics  
+
+### Step 2 — Merge with SCDB data
+
+Place your SCDB file (e.g., `SCDB_2024_01_caseCentered_Citation.csv`) in the same directory.
+
+Then run:
+
+python3 extract.py
+
+This produces:
+
+**scdb_with_wikipedia_salience.csv**
+
+which merges SCDB case metadata with Wikipedia pageview-based salience.
 
 ---
 
@@ -92,7 +107,7 @@ views_1mo — Views in the last month
 
 The Wikimedia REST API provides reliable pageview data beginning **July 2015**.
 
-Although the script requests data starting in 2008, the API only returns valid monthly traffic metrics from mid-2015 onward.  
-Pageviews prior to July 2015 are incomplete and should not be treated as comparable or reliable measures.
+Although the script requests data starting in 2008, the API only returns valid monthly traffic from mid-2015 onward.  
+Pageviews from before July 2015 are incomplete and should not be treated as comparable measures.
 
 ---
