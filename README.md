@@ -26,7 +26,7 @@ http://scdb.wustl.edu/data.php?s=1
 
 You need the “Case Centered — Cases Organized by Supreme Court Citation” version for both Modern and Legacy.
 
-### 1. Modern Database (typically 1946 → present)
+### 1. Modern Database (1946 → present)
 
 From the MODERN Database section, download the latest release.
 
@@ -38,7 +38,7 @@ Unzip it so you have the CSV:
 
 SCDB_2025_01_caseCentered_Citation.csv
 
-### 2. Legacy Database (typically 1791 → 1945)
+### 2. Legacy Database (1791 → 1945)
 
 From the LEGACY Database section, download:
 
